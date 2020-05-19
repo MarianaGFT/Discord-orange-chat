@@ -3,7 +3,12 @@ const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 const formatMessage = require("./utils/messages");
-const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require("./utils/users");
+const {
+  userJoin,
+  getCurrentUser,
+  userLeave,
+  getRoomUsers,
+} = require("./utils/users");
 
 const app = express();
 const server = http.createServer(app);
@@ -23,13 +28,19 @@ io.on("connection", (socket) => {
 
     //emite el mensaje de bienvenida
     //Avisa sólo al usuario que se esta conectand
-    socket.emit("message", formatMessage(botName, "¡Bienvenido a Discord Chat!"));
+    socket.emit(
+      "message",
+      formatMessage(botName, "¡Bienvenido a Discord Chat!")
+    );
 
     /*DIFERENCIA: broadcast.emit avisa a todos menos al usuario que se esta conectando */
     //Se emite cuando un usuario se conecte
     socket.broadcast
       .to(user.room)
-      .emit("message", formatMessage(botName, `${user.username} ha entrado al chat!`));
+      .emit(
+        "message",
+        formatMessage(botName, `${user.username} ha entrado al chat!`)
+      );
 
     //Envía usuarios y sala info
     io.to(user.room).emit("roomUsers", {
@@ -64,6 +75,8 @@ io.on("connection", (socket) => {
   });
 });
 
-//enviroment variable llamda PORT o usar el puerto 3000
-const PORT = 3000 || process.env.PORT;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+//enviroment variable llamada PORT o usar el puerto 3000
+const HOST = process.env.HOST || "0.0.0.0";
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, HOST, () => console.log(`Server running on port ${PORT}`));
